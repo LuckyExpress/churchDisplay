@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>Page Title</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		<script src="eventsource.min.js"></script>
+		<!-- <script src="/reload/reload.js"></script> -->
+		<style>
+			html {
+				overflow: hidden;
+			}
+
+			body {
+				margin: 0 auto;
+				background-color: black;
+			}
+
+			.ul {
+				object-fit: cover;
+			}
+
+			.left {
+				width: 830px;
+				height: 535px;
+			}
+
+			.right {
+				max-width: 850px;
+				height: 1080px;
+				margin-left: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div style="float: left; width: 50%; padding-right: 5px;">
+			<div style="float: right;">
+				<div style="height: 540px;"><img id="imgUpperLeft" class="ul left" /></div>
+				<div style="margin-top: 5px;"><img id="imgLowerLeft" class="ul left" /></div>
+			</div>
+		</div>
+		<div style="float: left; width: 49.5%;"><img id="imgRight" class="ul right" /></div>
+		<script type="text/javascript">
+			var myPort = 3000;
+			var myUrl = "http://" + location.hostname + ":" + myPort;
+			
+			// debug
+			console.log("myUrl: " + myUrl);
+
+			$("document").ready(function() {
+				var fileListUpperLeft;
+				var fileListLowerLeft;
+				var fileListRight;
+
+				var source1 = new EventSource(myUrl + "/event1");
+				source1.onmessage = function(event) {
+					console.log("fileListUpperLeft changed!");
+					var tmpFileList = JSON.parse(event.data);
+					if (tmpFileList != null && tmpFileList.length > 0) {
+						console.log("listCount:" + tmpFileList.length);
+						fileListUpperLeft = tmpFileList;
+					} else {
+						console.log("empty!!!");
+					}
+					// console.log("fileListUpperLeft: ", fileListUpperLeft);
+				};
+
+				var source2 = new EventSource(myUrl + "/event2");
+				source2.onmessage = function(event) {
+					console.log("fileListLowerLeft changed!");
+					var tmpFileList = JSON.parse(event.data);
+					if (tmpFileList != null && tmpFileList.length > 0) {
+						fileListLowerLeft = tmpFileList;
+					}
+				};
+
+				var source3 = new EventSource(myUrl + "/event3");
+				source3.onmessage = function(event) {
+					console.log("fileListRight changed!");
+					var tmpFileList = JSON.parse(event.data);
+					if (tmpFileList != null && tmpFileList.length > 0) {
+						fileListRight = tmpFileList;
+					}
+				};
+
+				fetch(myUrl + "/dir")
+					.then(resp => resp.json())
+					.then(function(data) {
+						fileListUpperLeft = data;
+						$("#imgUpperLeft").attr("src", myUrl + "/upperLeft/" + fileListUpperLeft[0]);
+					});
+
+				fetch(myUrl + "/dir2")
+					.then(resp => resp.json())
+					.then(function(data) {
+						fileListLowerLeft = data;
+						$("#imgLowerLeft").attr("src", myUrl + "/lowerLeft/" + fileListLowerLeft[0]);
+					});
+
+				fetch(myUrl + "/dir3")
+					.then(resp => resp.json())
+					.then(function(data) {
+						fileListRight = data;
+						$("#imgRight").attr("src", myUrl + "/right/" + fileListRight[0]);
+					});
+
+				var index1 = 0,
+					index2 = 0,
+					index3 = 0;
+
+				setInterval(function() {
+					var $img = $("#imgUpperLeft");
+					var path = myUrl + "/upperLeft/";
+					var fileList = fileListUpperLeft;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index1 >= fileList.length) {
+									index1 = 0;
+								}
+								$img.attr("src", path + fileList[index1]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				}, 30890);
+
+				setInterval(function() {
+					var $img = $("#imgLowerLeft");
+					var path = myUrl + "/lowerLeft/";
+					var fileList = fileListLowerLeft;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index2 >= fileList.length) {
+									index2 = 0;
+								}
+								$img.attr("src", path + fileList[index2]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				}, 21234);
+
+				setInterval(function() {
+					var $img = $("#imgRight");
+					var path = myUrl + "/right/";
+					var fileList = fileListRight;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index3 >= fileList.length) {
+									index3 = 0;
+								}
+								$img.attr("src", path + fileList[index3]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				}, 60567);
+
+				// reload page at 4:30 everyday (180125)
+				refreshPage(4, 30, 0);
+				function refreshPage(hours, minutes, seconds) {
+					var now = new Date();
+					var then = new Date();
+					if (now.getHours() > hours || (now.getHours() == hours && now.getMinutes() > minutes) || (now.getHours() == hours && now.getMinutes() == minutes && now.getSeconds() >= seconds)) {
+						then.setDate(now.getDate() + 1);
+					}
+					then.setHours(hours);
+					then.setMinutes(minutes);
+					then.setSeconds(seconds);
+					var timeout = then.getTime() - now.getTime();
+					setTimeout(function() {
+						window.location.reload(true);
+					}, timeout);
+				}
+				
+				//
+				// websocket to update the temperature (180312)
+				//
+				function subscribeToWs(msg) {
+					// var url = 'ws://' + location.hostname + (location.port ? ':' + location.port : '');
+					var url = "ws://" + location.hostname + ":" + myPort;
+					console.log(url);
+					var socket = new WebSocket(url);
+					var $temp = document.getElementById("temp");
+					socket.onmessage = function(event) {
+						var result = JSON.parse(event.data);
+						$temp.innerHTML = result.value.toFixed(2);
+						console.log(result);
+					};
+					socket.onerror = function(error) {
+						console.log("webSocket Error: " + error);
+					};
+					socket.onopen = function(event) {
+						if (msg) {
+							socket.send(msg);
+						}
+					};
+				}
+
+				// debug
+				// reload page when restart node (180405)
+				// refresh();
+
+				// debug
+				// subscribeToWs();
+			});
+		</script>
+	</body>
+</html>

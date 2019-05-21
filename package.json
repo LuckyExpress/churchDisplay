@@ -1,0 +1,23 @@
+{
+	"name": "docker_web_app",
+	"version": "1.0.0",
+	"description": "church display",
+	"author": "brian",
+	"main": "app.js",
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"chokidar": "^3.0.0",
+		"cors": "^2.8.5",
+		"event-source-polyfill": "^1.0.5",
+		"express": "^4.17.0",
+		"express-generator": "^4.15.5",
+		"fs": "0.0.1-security",
+		"node-watch": "^0.6.2",
+		"path": "^0.12.7",
+		"reload": "^2.4.0",
+		"server-sent-events": "^1.0.1",
+		"system-sleep": "^1.3.6"
+	}
+}

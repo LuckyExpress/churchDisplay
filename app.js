@@ -26,28 +26,36 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dir", (req, res) => {
+	console.log("folderUpperLeft: " + folderUpperLeft);
 	fs.readdir(folderUpperLeft, (err, files) => {
 		// files.forEach(file => { console.log('upperLeft: ' + file); });
 		// handle synology's self-created thumbnail directory (120122)
-		var index = files.indexOf("@eaDir");
-		if (index > -1) files.splice(index, 1);
-		res.send(files);
+		if (files) {
+			console.log(files);
+			var index = files.indexOf("@eaDir");
+			if (index > -1) files.splice(index, 1);
+			res.send(files);
+		}
 	});
 });
 
 app.get("/dir2", (req, res) => {
 	fs.readdir(folderLowerLeft, (err, files) => {
-		var index = files.indexOf("@eaDir");
-		if (index > -1) files.splice(index, 1);
-		res.send(files);
+		if (files) {
+			var index = files.indexOf("@eaDir");
+			if (index > -1) files.splice(index, 1);
+			res.send(files);
+		}
 	});
 });
 
 app.get("/dir3", (req, res) => {
 	fs.readdir(folderRight, (err, files) => {
-		var index = files.indexOf("@eaDir");
-		if (index > -1) files.splice(index, 1);
-		res.send(files);
+		if (files) {
+			var index = files.indexOf("@eaDir");
+			if (index > -1) files.splice(index, 1);
+			res.send(files);
+		}
 	});
 });
 

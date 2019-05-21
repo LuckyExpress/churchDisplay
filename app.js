@@ -25,10 +25,6 @@ app.get("/", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "index.html"));
 });
 
-chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000 }).on("all", (event, path) => {
-	console.log(event, path);
-});
-
 app.get("/dir", (req, res) => {
 	fs.readdir(folderUpperLeft, (err, files) => {
 		// files.forEach(file => { console.log('upperLeft: ' + file); });
@@ -60,9 +56,7 @@ app.get("/dir3", (req, res) => {
 // });
 
 app.get("/event1", sse, (req, res) => {
-	console.log("get /event1!!! folderUpperLeft: " + folderUpperLeft);
-	chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000 }).on("all", (event, path) => {
-		console.log(event, path);
+	chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
 		fs.readdir(folderUpperLeft, (err, files) => {
 			// handle synology's self-created thumbnail directory (120122)
 			var index = files.indexOf("@eaDir");
@@ -70,21 +64,10 @@ app.get("/event1", sse, (req, res) => {
 			res.sse(`data: ${JSON.stringify(files)}\n\n`);
 		});
 	});
-	// watch(folderUpperLeft, { recursive: true }, (evt, name) => {
-	// 	console.log("watch event1!!!");
-	// 	fs.readdir(folderUpperLeft, (err, files) => {
-	// 		// handle synology's self-created thumbnail directory (120122)
-	// 		var index = files.indexOf("@eaDir");
-	// 		if (index > -1) files.splice(index, 1);
-	// 		res.sse(`data: ${JSON.stringify(files)}\n\n`);
-	// 	});
-	// });
 });
 
 app.get("/event2", sse, (req, res) => {
-	console.log("get /event2!!! folderLowerLeft: " + folderLowerLeft);
-	watch(folderLowerLeft, { recursive: true }, (evt, name) => {
-		console.log("watch event2!!!");
+	chokidar.watch(folderLowerLeft, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
 		fs.readdir(folderLowerLeft, (err, files) => {
 			var index = files.indexOf("@eaDir");
 			if (index > -1) files.splice(index, 1);
@@ -94,9 +77,7 @@ app.get("/event2", sse, (req, res) => {
 });
 
 app.get("/event3", sse, (req, res) => {
-	console.log("get /event3!!! folderRight: " + folderRight);
-	watch(folderRight, { recursive: true }, (evt, name) => {
-		console.log("watch event3!!!");
+	chokidar.watch(folderRight, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
 		fs.readdir(folderRight, (err, files) => {
 			var index = files.indexOf("@eaDir");
 			if (index > -1) files.splice(index, 1);

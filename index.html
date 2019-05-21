@@ -48,103 +48,56 @@
 			var myPort = 3000;
 			var myUrl = "http://" + location.hostname + ":" + myPort;
 
-			// debug
-			console.log("myUrl: " + myUrl);
+			// console.log("myUrl: " + myUrl);
 
 			$("document").ready(function() {
 				var fileListUpperLeft;
 				var fileListLowerLeft;
 				var fileListRight;
 
-				var index1 = 0,
-					index2 = 0,
-					index3 = 0;
+				let index1 = { index: 0 };
+				let index2 = { index: 0 };
+				let index3 = { index: 0 };
 
 				const refreshImage = (id, path, index, fileList) => {
 					var $img = $(id);
 					var path = myUrl + path;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index >= fileList.length) {
-									index = 0;
-								}
-								$img.attr("src", path + fileList[index]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
+					if (fileList) {
+						if (fileList.length == 1) {
+							$img.attr("src", path + fileList[0]);
+						} else if (fileList.length > 1) {
+							$img
+								.fadeOut(400, function() {
+									if (++index.index >= fileList.length) {
+										index.index = 0;
+									}
+									$img.attr("src", path + fileList[index.index]);
+								})
+								.load(function() {
+									$(this).fadeIn(400);
+								});
+						}
 					}
-				}
+				};
 
 				const refreshUpperLeft = () => {
-					var $img = $("#imgUpperLeft");
-					var path = myUrl + "/upperLeft/";
-					var fileList = fileListUpperLeft;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index1 >= fileList.length) {
-									index1 = 0;
-								}
-								$img.attr("src", path + fileList[index1]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-					}
+					refreshImage("#imgUpperLeft", "/upperLeft/", index1, fileListUpperLeft);
 				};
 
 				const refreshLowerLeft = () => {
-					var $img = $("#imgLowerLeft");
-					var path = myUrl + "/lowerLeft/";
-					var fileList = fileListLowerLeft;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index2 >= fileList.length) {
-									index2 = 0;
-								}
-								$img.attr("src", path + fileList[index2]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-					}
+					refreshImage("#imgLowerLeft", "/lowerLeft/", index2, fileListLowerLeft);
 				};
 
 				const refreshRight = () => {
-					var $img = $("#imgRight");
-					var path = myUrl + "/right/";
-					var fileList = fileListRight;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index3 >= fileList.length) {
-									index3 = 0;
-								}
-								$img.attr("src", path + fileList[index3]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-					}
+					refreshImage("#imgRight", "/right/", index3, fileListRight);
 				};
 
 				var source1 = new EventSource(myUrl + "/event1");
 				source1.onmessage = function(event) {
-					console.log("fileListUpperLeft changed!");
+					// console.log("fileListUpperLeft changed!");
 					var tmpFileList = JSON.parse(event.data);
 					if (tmpFileList != null && tmpFileList.length > 0) {
-						console.log("listCount:" + tmpFileList.length);
+						// console.log("listCount:" + tmpFileList.length);
 						fileListUpperLeft = tmpFileList;
 						refreshUpperLeft();
 					} else {
@@ -155,19 +108,19 @@
 
 				var source2 = new EventSource(myUrl + "/event2");
 				source2.onmessage = function(event) {
-					console.log("fileListLowerLeft changed!");
 					var tmpFileList = JSON.parse(event.data);
 					if (tmpFileList != null && tmpFileList.length > 0) {
 						fileListLowerLeft = tmpFileList;
+						refreshLowerLeft();
 					}
 				};
 
 				var source3 = new EventSource(myUrl + "/event3");
 				source3.onmessage = function(event) {
-					console.log("fileListRight changed!");
 					var tmpFileList = JSON.parse(event.data);
 					if (tmpFileList != null && tmpFileList.length > 0) {
 						fileListRight = tmpFileList;
+						refreshRight();
 					}
 				};
 
@@ -192,9 +145,12 @@
 						$("#imgRight").attr("src", myUrl + "/right/" + fileListRight[0]);
 					});
 
-				setInterval(refreshUpperLeft(), 30890);
-				setInterval(refreshLowerLeft(), 21234);
-				setInterval(refreshRight(), 60567);
+				// setInterval(refreshUpperLeft, 30890);
+				// setInterval(refreshLowerLeft, 21234);
+				// setInterval(refreshRight, 60567);
+				setInterval(refreshUpperLeft, 5000);
+				setInterval(refreshLowerLeft, 6000);
+				setInterval(refreshRight, 7000);
 
 				// reload page at 4:30 everyday (180125)
 				refreshPage(4, 30, 0);

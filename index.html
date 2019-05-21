@@ -47,7 +47,7 @@
 		<script type="text/javascript">
 			var myPort = 3000;
 			var myUrl = "http://" + location.hostname + ":" + myPort;
-			
+
 			// debug
 			console.log("myUrl: " + myUrl);
 
@@ -56,6 +56,89 @@
 				var fileListLowerLeft;
 				var fileListRight;
 
+				var index1 = 0,
+					index2 = 0,
+					index3 = 0;
+
+				const refreshImage = (id, path, index, fileList) => {
+					var $img = $(id);
+					var path = myUrl + path;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index >= fileList.length) {
+									index = 0;
+								}
+								$img.attr("src", path + fileList[index]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				}
+
+				const refreshUpperLeft = () => {
+					var $img = $("#imgUpperLeft");
+					var path = myUrl + "/upperLeft/";
+					var fileList = fileListUpperLeft;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index1 >= fileList.length) {
+									index1 = 0;
+								}
+								$img.attr("src", path + fileList[index1]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				};
+
+				const refreshLowerLeft = () => {
+					var $img = $("#imgLowerLeft");
+					var path = myUrl + "/lowerLeft/";
+					var fileList = fileListLowerLeft;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index2 >= fileList.length) {
+									index2 = 0;
+								}
+								$img.attr("src", path + fileList[index2]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				};
+
+				const refreshRight = () => {
+					var $img = $("#imgRight");
+					var path = myUrl + "/right/";
+					var fileList = fileListRight;
+					if (fileList.length == 1) {
+						$img.attr("src", path + fileList[0]);
+					} else if (fileList.length > 1) {
+						$img
+							.fadeOut(400, function() {
+								if (++index3 >= fileList.length) {
+									index3 = 0;
+								}
+								$img.attr("src", path + fileList[index3]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+					}
+				};
+
 				var source1 = new EventSource(myUrl + "/event1");
 				source1.onmessage = function(event) {
 					console.log("fileListUpperLeft changed!");
@@ -63,6 +146,7 @@
 					if (tmpFileList != null && tmpFileList.length > 0) {
 						console.log("listCount:" + tmpFileList.length);
 						fileListUpperLeft = tmpFileList;
+						refreshUpperLeft();
 					} else {
 						console.log("empty!!!");
 					}
@@ -108,69 +192,9 @@
 						$("#imgRight").attr("src", myUrl + "/right/" + fileListRight[0]);
 					});
 
-				var index1 = 0,
-					index2 = 0,
-					index3 = 0;
-
-				setInterval(function() {
-					var $img = $("#imgUpperLeft");
-					var path = myUrl + "/upperLeft/";
-					var fileList = fileListUpperLeft;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index1 >= fileList.length) {
-									index1 = 0;
-								}
-								$img.attr("src", path + fileList[index1]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-					}
-				}, 30890);
-
-				setInterval(function() {
-					var $img = $("#imgLowerLeft");
-					var path = myUrl + "/lowerLeft/";
-					var fileList = fileListLowerLeft;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index2 >= fileList.length) {
-									index2 = 0;
-								}
-								$img.attr("src", path + fileList[index2]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-					}
-				}, 21234);
-
-				setInterval(function() {
-					var $img = $("#imgRight");
-					var path = myUrl + "/right/";
-					var fileList = fileListRight;
-					if (fileList.length == 1) {
-						$img.attr("src", path + fileList[0]);
-					} else if (fileList.length > 1) {
-						$img
-							.fadeOut(400, function() {
-								if (++index3 >= fileList.length) {
-									index3 = 0;
-								}
-								$img.attr("src", path + fileList[index3]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-					}
-				}, 60567);
+				setInterval(refreshUpperLeft(), 30890);
+				setInterval(refreshLowerLeft(), 21234);
+				setInterval(refreshRight(), 60567);
 
 				// reload page at 4:30 everyday (180125)
 				refreshPage(4, 30, 0);
@@ -188,7 +212,7 @@
 						window.location.reload(true);
 					}, timeout);
 				}
-				
+
 				//
 				// websocket to update the temperature (180312)
 				//

@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "index.html"));
 });
 
-chokidar.watch(folderUpperLeft, { usePolling: true }).on("all", (event, path) => {
+chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000 }).on("all", (event, path) => {
 	console.log(event, path);
 });
 
@@ -61,8 +61,8 @@ app.get("/dir3", (req, res) => {
 
 app.get("/event1", sse, (req, res) => {
 	console.log("get /event1!!! folderUpperLeft: " + folderUpperLeft);
-	watch(folderUpperLeft, { recursive: true }, (evt, name) => {
-		console.log("watch event1!!!");
+	chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000 }).on("all", (event, path) => {
+		console.log(event, path);
 		fs.readdir(folderUpperLeft, (err, files) => {
 			// handle synology's self-created thumbnail directory (120122)
 			var index = files.indexOf("@eaDir");
@@ -70,6 +70,15 @@ app.get("/event1", sse, (req, res) => {
 			res.sse(`data: ${JSON.stringify(files)}\n\n`);
 		});
 	});
+	// watch(folderUpperLeft, { recursive: true }, (evt, name) => {
+	// 	console.log("watch event1!!!");
+	// 	fs.readdir(folderUpperLeft, (err, files) => {
+	// 		// handle synology's self-created thumbnail directory (120122)
+	// 		var index = files.indexOf("@eaDir");
+	// 		if (index > -1) files.splice(index, 1);
+	// 		res.sse(`data: ${JSON.stringify(files)}\n\n`);
+	// 	});
+	// });
 });
 
 app.get("/event2", sse, (req, res) => {

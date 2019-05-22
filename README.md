@@ -4,6 +4,7 @@ docker version of church display
 
 ## Getting Started
 
+docker / standalone
 $docker build -t briandre/churchdisplay .
 $docker run -it --rm -v c:/Users:/docker -p 3000:3000 -p 9857:9857 --name church briandre/churchdisplay
 

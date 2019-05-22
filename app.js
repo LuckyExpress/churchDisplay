@@ -13,7 +13,7 @@ const chokidar = require("chokidar");
 // const folderUpperLeft = path.resolve(__dirname, "public/upperLeft");
 // const folderLowerLeft = path.resolve(__dirname, "public/lowerLeft");
 // const folderRight = path.resolve(__dirname, "public/right");
-const dataPath = "/data/ChurchDisplayData/";
+const dataPath = "/docker/churchDisplay/";
 const folderUpperLeft = dataPath + "upperLeft";
 const folderLowerLeft = dataPath + "lowerLeft";
 const folderRight = dataPath + "right";
@@ -26,12 +26,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/dir", (req, res) => {
-	console.log("folderUpperLeft: " + folderUpperLeft);
 	fs.readdir(folderUpperLeft, (err, files) => {
-		// files.forEach(file => { console.log('upperLeft: ' + file); });
-		// handle synology's self-created thumbnail directory (120122)
 		if (files) {
-			console.log(files);
+			// handle synology's self-created thumbnail directory (120122)
 			var index = files.indexOf("@eaDir");
 			if (index > -1) files.splice(index, 1);
 			res.send(files);
@@ -63,49 +60,43 @@ app.get("/dir3", (req, res) => {
 // 	res.send("tagId is set to " + req.params.tagId);
 // });
 
-app.get("/event1", sse, (req, res) => {
-	chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
-		console.log(event, path);
-		fs.readdir(folderUpperLeft, (err, files) => {
+const myWatch = (folder, sse, res) => {
+	chokidar.watch(folder, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
+		let newFile = null;
+		if (event === "add") newFile = path.replace(/^.*[\\\/]/, "");
+		fs.readdir(folder, (err, files) => {
 			if (files) {
 				// handle synology's self-created thumbnail directory (120122)
 				var index = files.indexOf("@eaDir");
 				if (index > -1) files.splice(index, 1);
-				res.sse(`data: ${JSON.stringify(files)}\n\n`);
+
+				// now get the default index (190522)
+				index = -1;
+				if (newFile) index = files.indexOf(newFile);
+
+				let myObj = { index: index, files: files };
+				let myJson = JSON.stringify(myObj);
+				res.sse(`data: ${myJson}\n\n`);
 			}
 		});
 	});
+};
+
+app.get("/event1", sse, (req, res) => {
+	myWatch(folderUpperLeft, sse, res);
 });
 
 app.get("/event2", sse, (req, res) => {
-	chokidar.watch(folderLowerLeft, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
-		console.log(event, path);
-		fs.readdir(folderLowerLeft, (err, files) => {
-			if (files) {
-				var index = files.indexOf("@eaDir");
-				if (index > -1) files.splice(index, 1);
-				res.sse(`data: ${JSON.stringify(files)}\n\n`);
-			}
-		});
-	});
+	myWatch(folderLowerLeft, sse, res);
 });
 
 app.get("/event3", sse, (req, res) => {
-	chokidar.watch(folderRight, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
-		console.log(event, path);
-		fs.readdir(folderRight, (err, files) => {
-			if (files) {
-				var index = files.indexOf("@eaDir");
-				if (index > -1) files.splice(index, 1);
-				res.sse(`data: ${JSON.stringify(files)}\n\n`);
-			}
-		});
-	});
+	myWatch(folderRight, sse, res);
 });
 
-// reload page when restart node (180125)
+// reload page when restart node (default port 9856) (180125)
 app.use("/reload", express.static(path.resolve(__dirname, "node_modules")));
-reload(app);
+reload(app, { port: 9857 });
 
 app.use((req, res) => {
 	res.statusCode = 404;

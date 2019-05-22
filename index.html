@@ -8,7 +8,7 @@
 		<!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="eventsource.min.js"></script>
-		<!-- <script src="/reload/reload.js"></script> -->
+		<script src="/reload/reload.js"></script>
 		<style>
 			html {
 				overflow: hidden;
@@ -48,110 +48,77 @@
 			var myPort = 3000;
 			var myUrl = "http://" + location.hostname + ":" + myPort;
 
-			// console.log("myUrl: " + myUrl);
+			// division (190522)
+			let upperLeft = { id: "#imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 30890, timeout: null };
+			let lowerLeft = { id: "#imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 21234, timeout: null };
+			let rightPanel = { id: "#imgRight", path: "/right/", files: [], index: 0, interval: 60567, timeout: null };
+
+			// debug
+			upperLeft.interval = 10000;
+			lowerLeft.interval = 9000;
+			rightPanel.interval = 11000;
 
 			$("document").ready(function() {
-				var fileListUpperLeft;
-				var fileListLowerLeft;
-				var fileListRight;
-
-				let index1 = { index: 0 };
-				let index2 = { index: 0 };
-				let index3 = { index: 0 };
-
-				const refreshImage = (id, path, index, fileList) => {
-					var $img = $(id);
-					var path = myUrl + path;
-					if (fileList) {
-						if (fileList.length == 1) {
-							$img.attr("src", path + fileList[0]);
-						} else if (fileList.length > 1) {
-							$img
-								.fadeOut(400, function() {
-									if (++index.index >= fileList.length) {
-										index.index = 0;
-									}
-									$img.attr("src", path + fileList[index.index]);
-								})
-								.load(function() {
-									$(this).fadeIn(400);
-								});
-						}
+				const refreshImage = (div, defaultIndex = -1) => {
+					clearTimeout(div.timeout);
+					var $img = $(div.id);
+					var path = myUrl + div.path;
+					if (div.files && div.files.length > 0) {
+						$img
+							.fadeOut(400, function() {
+								if (defaultIndex !== -1 && defaultIndex < div.files.length) {
+									div.index = defaultIndex;
+								} else if (++div.index >= div.files.length) {
+									div.index = 0;
+								}
+								$img.attr("src", path + div.files[div.index]);
+							})
+							.load(function() {
+								$(this).fadeIn(400);
+							});
+						if (div.files.length !== 1) div.timeout = setTimeout(() => refreshImage(div), div.interval);
 					}
-				};
-
-				const refreshUpperLeft = () => {
-					refreshImage("#imgUpperLeft", "/upperLeft/", index1, fileListUpperLeft);
-				};
-
-				const refreshLowerLeft = () => {
-					refreshImage("#imgLowerLeft", "/lowerLeft/", index2, fileListLowerLeft);
-				};
-
-				const refreshRight = () => {
-					refreshImage("#imgRight", "/right/", index3, fileListRight);
 				};
 
 				var source1 = new EventSource(myUrl + "/event1");
 				source1.onmessage = function(event) {
-					console.log("fileListUpperLeft changed!");
-					var tmpFileList = JSON.parse(event.data);
-					if (tmpFileList != null && tmpFileList.length > 0) {
-						console.log("listCount:" + tmpFileList.length);
-						fileListUpperLeft = tmpFileList;
-						refreshUpperLeft();
-					} else {
-						console.log("empty!!!");
-					}
-					console.log("fileListUpperLeft:");
-					console.log(fileListUpperLeft);
+					let myObj = JSON.parse(event.data);
+					upperLeft.files = myObj.files.slice();
+					refreshImage(upperLeft, myObj.index);
 				};
 
 				var source2 = new EventSource(myUrl + "/event2");
 				source2.onmessage = function(event) {
-					var tmpFileList = JSON.parse(event.data);
-					if (tmpFileList != null && tmpFileList.length > 0) {
-						fileListLowerLeft = tmpFileList;
-						refreshLowerLeft();
-					}
+					let myObj = JSON.parse(event.data);
+					lowerLeft.files = myObj.files.slice();
+					refreshImage(lowerLeft, myObj.index);
 				};
 
 				var source3 = new EventSource(myUrl + "/event3");
 				source3.onmessage = function(event) {
-					var tmpFileList = JSON.parse(event.data);
-					if (tmpFileList != null && tmpFileList.length > 0) {
-						fileListRight = tmpFileList;
-						refreshRight();
+					let myObj = JSON.parse(event.data);
+					rightPanel.files = myObj.files.slice();
+					refreshImage(rightPanel, myObj.index);
+				};
+
+				const initDiv = (div, files) => {
+					if (files) {
+						div.files = files.slice();
+						refreshImage(div, 0);
 					}
 				};
 
 				fetch(myUrl + "/dir")
 					.then(resp => resp.json())
-					.then(function(data) {
-						fileListUpperLeft = data;
-						$("#imgUpperLeft").attr("src", myUrl + "/upperLeft/" + fileListUpperLeft[0]);
-					});
+					.then(data => initDiv(upperLeft, data));
 
 				fetch(myUrl + "/dir2")
 					.then(resp => resp.json())
-					.then(function(data) {
-						fileListLowerLeft = data;
-						$("#imgLowerLeft").attr("src", myUrl + "/lowerLeft/" + fileListLowerLeft[0]);
-					});
+					.then(data => initDiv(lowerLeft, data));
 
 				fetch(myUrl + "/dir3")
 					.then(resp => resp.json())
-					.then(function(data) {
-						fileListRight = data;
-						$("#imgRight").attr("src", myUrl + "/right/" + fileListRight[0]);
-					});
-
-				setInterval(refreshUpperLeft, 30890);
-				setInterval(refreshLowerLeft, 21234);
-				setInterval(refreshRight, 60567);
-				// setInterval(refreshUpperLeft, 5000);
-				// setInterval(refreshLowerLeft, 6000);
-				// setInterval(refreshRight, 7000);
+					.then(data => initDiv(rightPanel, data));
 
 				// reload page at 4:30 everyday (180125)
 				refreshPage(4, 30, 0);
@@ -193,10 +160,6 @@
 						}
 					};
 				}
-
-				// debug
-				// reload page when restart node (180405)
-				// refresh();
 
 				// debug
 				// subscribeToWs();

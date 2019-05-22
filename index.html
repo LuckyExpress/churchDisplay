@@ -94,16 +94,17 @@
 
 				var source1 = new EventSource(myUrl + "/event1");
 				source1.onmessage = function(event) {
-					// console.log("fileListUpperLeft changed!");
+					console.log("fileListUpperLeft changed!");
 					var tmpFileList = JSON.parse(event.data);
 					if (tmpFileList != null && tmpFileList.length > 0) {
-						// console.log("listCount:" + tmpFileList.length);
+						console.log("listCount:" + tmpFileList.length);
 						fileListUpperLeft = tmpFileList;
 						refreshUpperLeft();
 					} else {
 						console.log("empty!!!");
 					}
-					// console.log("fileListUpperLeft: ", fileListUpperLeft);
+					console.log("fileListUpperLeft:");
+					console.log(fileListUpperLeft);
 				};
 
 				var source2 = new EventSource(myUrl + "/event2");

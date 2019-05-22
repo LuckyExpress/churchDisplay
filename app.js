@@ -65,31 +65,40 @@ app.get("/dir3", (req, res) => {
 
 app.get("/event1", sse, (req, res) => {
 	chokidar.watch(folderUpperLeft, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
+		console.log(event, path);
 		fs.readdir(folderUpperLeft, (err, files) => {
-			// handle synology's self-created thumbnail directory (120122)
-			var index = files.indexOf("@eaDir");
-			if (index > -1) files.splice(index, 1);
-			res.sse(`data: ${JSON.stringify(files)}\n\n`);
+			if (files) {
+				// handle synology's self-created thumbnail directory (120122)
+				var index = files.indexOf("@eaDir");
+				if (index > -1) files.splice(index, 1);
+				res.sse(`data: ${JSON.stringify(files)}\n\n`);
+			}
 		});
 	});
 });
 
 app.get("/event2", sse, (req, res) => {
 	chokidar.watch(folderLowerLeft, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
+		console.log(event, path);
 		fs.readdir(folderLowerLeft, (err, files) => {
-			var index = files.indexOf("@eaDir");
-			if (index > -1) files.splice(index, 1);
-			res.sse(`data: ${JSON.stringify(files)}\n\n`);
+			if (files) {
+				var index = files.indexOf("@eaDir");
+				if (index > -1) files.splice(index, 1);
+				res.sse(`data: ${JSON.stringify(files)}\n\n`);
+			}
 		});
 	});
 });
 
 app.get("/event3", sse, (req, res) => {
 	chokidar.watch(folderRight, { usePolling: true, interval: 1000, binaryInterval: 1000, ignoreInitial: true }).on("all", (event, path) => {
+		console.log(event, path);
 		fs.readdir(folderRight, (err, files) => {
-			var index = files.indexOf("@eaDir");
-			if (index > -1) files.splice(index, 1);
-			res.sse(`data: ${JSON.stringify(files)}\n\n`);
+			if (files) {
+				var index = files.indexOf("@eaDir");
+				if (index > -1) files.splice(index, 1);
+				res.sse(`data: ${JSON.stringify(files)}\n\n`);
+			}
 		});
 	});
 });

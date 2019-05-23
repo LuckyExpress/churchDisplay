@@ -6,6 +6,7 @@
 		<title>Page Title</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+		<link href="favicon.ico" rel="icon" type="image/x-icon" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="eventsource.min.js"></script>
 		<script src="/reload/reload.js"></script>
@@ -54,9 +55,9 @@
 			let rightPanel = { id: "#imgRight", path: "/right/", files: [], index: 0, interval: 60567, timeout: null };
 
 			// debug
-			upperLeft.interval = 10000;
-			lowerLeft.interval = 9000;
-			rightPanel.interval = 11000;
+			upperLeft.interval = 5050;
+			lowerLeft.interval = 6400;
+			rightPanel.interval = 7300;
 
 			$("document").ready(function() {
 				const refreshImage = (div, defaultIndex = -1) => {
@@ -64,19 +65,18 @@
 					var $img = $(div.id);
 					var path = myUrl + div.path;
 					if (div.files && div.files.length > 0) {
-						$img
-							.fadeOut(400, function() {
-								if (defaultIndex !== -1 && defaultIndex < div.files.length) {
-									div.index = defaultIndex;
-								} else if (++div.index >= div.files.length) {
-									div.index = 0;
-								}
-								$img.attr("src", path + div.files[div.index]);
-							})
-							.load(function() {
-								$(this).fadeIn(400);
-							});
-						if (div.files.length !== 1) div.timeout = setTimeout(() => refreshImage(div), div.interval);
+						$img.fadeOut(400, function() {
+							if (defaultIndex !== -1 && defaultIndex < div.files.length) {
+								div.index = defaultIndex;
+							} else if (++div.index >= div.files.length) {
+								div.index = 0;
+							}
+							$img.attr("src", path + div.files[div.index]);
+							$img.fadeIn(300);
+						});
+						if (div.files.length !== 1) {
+							div.timeout = setTimeout(() => refreshImage(div), div.interval);
+						}
 					}
 				};
 

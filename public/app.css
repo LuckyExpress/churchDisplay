@@ -1,0 +1,23 @@
+html {
+	overflow: hidden;
+}
+
+body {
+	margin: 0 auto;
+	background-color: black;
+}
+
+.ul {
+	object-fit: cover;
+}
+
+.left {
+	width: 830px;
+	height: 535px;
+}
+
+.right {
+	max-width: 850px;
+	height: 1080px;
+	margin-left: 5px;
+}

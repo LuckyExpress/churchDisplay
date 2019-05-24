@@ -6,10 +6,26 @@
 		<title>Page Title</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
-		<link href="favicon.ico" rel="icon" type="image/x-icon" />
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-		<script src="eventsource.min.js"></script>
-		<script src="/reload/reload.js"></script>
+		<script type="text/javascript">
+			var myPort = 3000;
+			var myUrl = "http://" + location.hostname + ":" + myPort;
+			var element1 = document.createElement("script");
+			element1.src = myUrl + "/reload/reload.js";
+			document.getElementsByTagName("head")[0].appendChild(element1);
+			var element2 = document.createElement("script");
+			element2.src = myUrl + "/eventsource.min.js";
+			document.getElementsByTagName("head")[0].appendChild(element2);
+			var element3 = document.createElement("link");
+			element3.href = myUrl + "/favicon.ico";
+			element3.rel = "icon";
+			element3.type = "image/x-icon";
+			document.getElementsByTagName("head")[0].appendChild(element3);
+		</script>
+		<!-- <script src="eventsource.min.js"></script> -->
+		<!-- <script src="reloadaaa/reload.js"></script> -->
+		<!-- <link href="favicon.ico" rel="icon" type="image/x-icon" /> -->
+
 		<style>
 			html {
 				overflow: hidden;
@@ -46,18 +62,13 @@
 		</div>
 		<div style="float: left; width: 49.5%;"><img id="imgRight" class="ul right" /></div>
 		<script type="text/javascript">
-			var myPort = 3000;
-			var myUrl = "http://" + location.hostname + ":" + myPort;
+			// var myPort = 3000;
+			// var myUrl = "http://" + location.hostname + ":" + myPort;
 
 			// division (190522)
-			let upperLeft = { id: "#imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 30890, timeout: null };
-			let lowerLeft = { id: "#imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 21234, timeout: null };
-			let rightPanel = { id: "#imgRight", path: "/right/", files: [], index: 0, interval: 60567, timeout: null };
-
-			// debug
-			upperLeft.interval = 5050;
-			lowerLeft.interval = 6400;
-			rightPanel.interval = 7300;
+			let upperLeft = { id: "#imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19500, timeout: null };
+			let lowerLeft = { id: "#imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 15000, timeout: null };
+			let rightPanel = { id: "#imgRight", path: "/right/", files: [], index: 0, interval: 32500, timeout: null };
 
 			$("document").ready(function() {
 				const refreshImage = (div, defaultIndex = -1) => {
@@ -65,7 +76,7 @@
 					var $img = $(div.id);
 					var path = myUrl + div.path;
 					if (div.files && div.files.length > 0) {
-						$img.fadeOut(400, function() {
+						$img.fadeOut(400, () => {
 							if (defaultIndex !== -1 && defaultIndex < div.files.length) {
 								div.index = defaultIndex;
 							} else if (++div.index >= div.files.length) {
@@ -81,21 +92,21 @@
 				};
 
 				var source1 = new EventSource(myUrl + "/event1");
-				source1.onmessage = function(event) {
+				source1.onmessage = event => {
 					let myObj = JSON.parse(event.data);
 					upperLeft.files = myObj.files.slice();
 					refreshImage(upperLeft, myObj.index);
 				};
 
 				var source2 = new EventSource(myUrl + "/event2");
-				source2.onmessage = function(event) {
+				source2.onmessage = event => {
 					let myObj = JSON.parse(event.data);
 					lowerLeft.files = myObj.files.slice();
 					refreshImage(lowerLeft, myObj.index);
 				};
 
 				var source3 = new EventSource(myUrl + "/event3");
-				source3.onmessage = function(event) {
+				source3.onmessage = event => {
 					let myObj = JSON.parse(event.data);
 					rightPanel.files = myObj.files.slice();
 					refreshImage(rightPanel, myObj.index);

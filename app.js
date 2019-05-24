@@ -18,6 +18,8 @@ const folderUpperLeft = dataPath + "upperLeft";
 const folderLowerLeft = dataPath + "lowerLeft";
 const folderRight = dataPath + "right";
 
+app.use(cors());
+
 app.use(express.static(dataPath));
 app.use(express.static(path.resolve(__dirname, "public")));
 

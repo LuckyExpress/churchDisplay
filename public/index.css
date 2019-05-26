@@ -1,0 +1,50 @@
+body {
+	margin: 0 auto;
+	background-color: black;
+}
+.ul {
+	object-fit: cover;
+}
+@media (min-width: 960px) {
+	html {
+		overflow: hidden;
+	}
+	.leftContainer {
+		float: left;
+		width: 50%;
+		padding-right: 5px;
+	}
+	.left {
+		float: right;
+		height: 1080px;
+	}
+	.leftImg {
+		width: 830px;
+		height: 535px;
+	}
+	.divider {
+		height: 5px;
+	}
+	.rightContainer {
+		float: left;
+		width: 49.5%;
+	}
+	.rightImg {
+		max-width: 850px;
+		height: 1080px;
+		margin-left: 5px;
+	}
+}
+@media (max-width: 960px) {
+	.rightImg {
+		width: 100%;
+	}
+	.leftContainer {
+	}
+	.leftImg {
+		width: 100%;
+	}
+	.rightImg {
+		width: 100%;
+	}
+}

@@ -22,9 +22,6 @@ body {
 		width: 830px;
 		height: 535px;
 	}
-	.divider {
-		height: 5px;
-	}
 	.rightContainer {
 		float: left;
 		width: 49.5%;
@@ -34,17 +31,27 @@ body {
 		height: 1080px;
 		margin-left: 5px;
 	}
+	.divider1st {
+		height: 10px;
+	}
+	.divider2nd {
+		height: 0;
+	}
 }
 @media (max-width: 960px) {
-	.rightImg {
-		width: 100%;
-	}
-	.leftContainer {
-	}
+	html {
+		overflow-y: scroll; 
+	}	
 	.leftImg {
 		width: 100%;
 	}
 	.rightImg {
 		width: 100%;
+	}
+	.divider1st {
+		height: 5px;
+	}
+	.divider2nd {
+		height: 5px;
 	}
 }

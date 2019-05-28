@@ -60,8 +60,17 @@
 			let upperLeft = { id: "#imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19500, timeout: null };
 			let lowerLeft = { id: "#imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 9876, timeout: null };
 			let rightPanel = { id: "#imgRight", path: "/right/", files: [], index: 0, interval: 15678, timeout: null };
+			let panels = [upperLeft, lowerLeft, rightPanel];
 
-			$("document").ready(function() {
+			$("document").ready(() => {
+				$(window).resize(() => {
+					panels.map(panel => {
+						if (panel.files && panel.files.length > 0) {
+							let $img = $(panel.id);
+							$img.parent().height($img.height());
+						}
+					});
+				});
 				const refreshImage = (div, defaultIndex = -1) => {
 					clearTimeout(div.timeout);
 					var $img = $(div.id);
@@ -139,8 +148,7 @@
 					.then(data => initDiv(rightPanel, data));
 
 				// reload page at 4:30 everyday (180125)
-				refreshPage(4, 30, 0);
-				function refreshPage(hours, minutes, seconds) {
+				((hours, minutes, seconds) => {
 					var now = new Date();
 					var then = new Date();
 					if (now.getHours() > hours || (now.getHours() == hours && now.getMinutes() > minutes) || (now.getHours() == hours && now.getMinutes() == minutes && now.getSeconds() >= seconds)) {
@@ -150,15 +158,15 @@
 					then.setMinutes(minutes);
 					then.setSeconds(seconds);
 					var timeout = then.getTime() - now.getTime();
-					setTimeout(function() {
+					setTimeout(() => {
 						window.location.reload(true);
 					}, timeout);
-				}
+				})(4, 30, 0);
 
 				//
-				// websocket to update the temperature (180312)
+				// subscribe websocket to update the temperature (180312)
 				//
-				function subscribeToWs(msg) {
+				const subscribeToWs = msg => {
 					// var url = 'ws://' + location.hostname + (location.port ? ':' + location.port : '');
 					var url = "ws://" + location.hostname + ":" + myPort;
 					console.log(url);
@@ -177,7 +185,7 @@
 							socket.send(msg);
 						}
 					};
-				}
+				};
 
 				// debug
 				// subscribeToWs();

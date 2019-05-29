@@ -3,10 +3,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<title>Page Title</title>
+		<title>Church Display</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script type="text/javascript">
 			var myPort = 3000;
 			var myUrl = "http://" + location.hostname + ":" + myPort;
@@ -36,60 +34,49 @@
 	<body>
 		<div class="leftContainer">
 			<div class="left">
-				<div>
-					<img id="imgUpperLeft" class="ul leftImg" />
-				</div>
+				<img id="imgUpperLeft" class="ul leftImg" />
 				<div class="divider1st"></div>
-				<div>
-					<img id="imgLowerLeft" class="ul leftImg" />
-				</div>
+				<img id="imgLowerLeft" class="ul leftImg" />
 				<div class="divider2nd"></div>
 			</div>
 		</div>
 		<div class="rightContainer">
-			<div>
-				<img id="imgRight" class="ul rightImg" />
-			</div>
+			<img id="imgRight" class="ul rightImg" />
 		</div>
 
 		<script type="text/javascript">
-			// var myPort = 3000;
-			// var myUrl = "http://" + location.hostname + ":" + myPort;
-
 			// division (interval:19500/5000/32500) (190522)
-			let upperLeft = { id: "#imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19500, timeout: null };
-			let lowerLeft = { id: "#imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 9876, timeout: null };
-			let rightPanel = { id: "#imgRight", path: "/right/", files: [], index: 0, interval: 15678, timeout: null };
+			let upperLeft = { id: "imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19500, timeout: null };
+			let lowerLeft = { id: "imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 5000, timeout: null };
+			let rightPanel = { id: "imgRight", path: "/right/", files: [], index: 0, interval: 32500, timeout: null };
 			let panels = [upperLeft, lowerLeft, rightPanel];
 
-			$("document").ready(() => {
-				$(window).resize(() => {
-					panels.map(panel => {
-						if (panel.files && panel.files.length > 0) {
-							let $img = $(panel.id);
-							$img.parent().height($img.height());
+			(() => {
+				panels.map(panel => {
+					let $img = document.getElementById(panel.id);
+					$img.addEventListener("transitionend", () => {
+						if ($img.classList.contains("fadeOut")) {
+							if (panel.index >= panel.files.length) panel.index = 0;
+							$img.src = myUrl + panel.path + panel.files[panel.index++];
 						}
 					});
+					$img.addEventListener("load", () => {
+						$img.classList.remove("fadeOut");
+					});
 				});
-				const refreshImage = (div, defaultIndex = -1) => {
-					clearTimeout(div.timeout);
-					var $img = $(div.id);
-					var path = myUrl + div.path;
-					if (div.files && div.files.length > 0) {
-						$img.fadeOut(400, () => {
-							if (defaultIndex !== -1 && defaultIndex < div.files.length) {
-								div.index = defaultIndex;
-							} else if (++div.index >= div.files.length) {
-								div.index = 0;
-							}
-							$img.attr("src", path + div.files[div.index]);
-							$img.load(() => {
-								$img.parent().height($img.height());
-								$img.fadeIn(400);
-							});
-						});
-						if (div.files.length !== 1) {
-							div.timeout = setTimeout(() => refreshImage(div), div.interval);
+
+				const refreshImage = (panel, defaultIndex = -1) => {
+					clearTimeout(panel.timeout);
+					if (panel.files && panel.files.length > 0) {
+						let $img = document.getElementById(panel.id);
+						if (defaultIndex !== -1) panel.index = defaultIndex;
+						if (!$img.src) {
+							$img.src = myUrl + panel.path + panel.files[panel.index];
+						} else {
+							$img.classList.add("fadeOut");
+						}
+						if (panel.files.length !== 1) {
+							panel.timeout = setTimeout(() => refreshImage(panel), panel.interval);
 						}
 					}
 				};
@@ -189,7 +176,7 @@
 
 				// debug
 				// subscribeToWs();
-			});
+			})();
 		</script>
 	</body>
 </html>

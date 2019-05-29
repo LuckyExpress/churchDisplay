@@ -4,6 +4,10 @@ body {
 }
 .ul {
 	object-fit: cover;
+	transition: all 0.4s ease;
+}
+img.fadeOut {
+	opacity: 0;
 }
 @media (min-width: 960px) {
 	html {
@@ -32,16 +36,13 @@ body {
 		margin-left: 5px;
 	}
 	.divider1st {
-		height: 10px;
-	}
-	.divider2nd {
-		height: 0;
+		height: 5px;
 	}
 }
 @media (max-width: 960px) {
 	html {
-		overflow-y: scroll; 
-	}	
+		overflow-y: scroll;
+	}
 	.leftImg {
 		width: 100%;
 	}
@@ -49,9 +50,9 @@ body {
 		width: 100%;
 	}
 	.divider1st {
-		height: 5px;
+		height: 0px;
 	}
 	.divider2nd {
-		height: 5px;
+		height: 0px;
 	}
 }

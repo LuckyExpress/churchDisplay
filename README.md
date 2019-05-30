@@ -4,7 +4,11 @@ docker version of church display
 
 ## Getting Started
 
-docker / standalone
+npm install
+
+npm start
+
+docker:
 
 $docker build -t briandre/churchdisplay .
 

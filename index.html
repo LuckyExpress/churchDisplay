@@ -26,7 +26,7 @@
 			document.getElementsByTagName("head")[0].appendChild(element4);
 		</script>
 		<!-- <script src="eventsource.min.js"></script> -->
-		<!-- <script src="reloadaaa/reload.js"></script> -->
+		<!-- <script src="reload/reload.js"></script> -->
 		<!-- <link href="favicon.ico" rel="icon" type="image/x-icon" /> -->
 		<!-- <link rel="stylesheet" type="text/css" href="index.css"> -->
 	</head>
@@ -45,8 +45,8 @@
 		</div>
 
 		<script type="text/javascript">
-			// division (interval:19567/10123/32345) (190522)
-			let upperLeft = { id: "imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19567, timeout: null };
+			// division (interval:19876/10123/32345) (190522)
+			let upperLeft = { id: "imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19876, timeout: null };
 			let lowerLeft = { id: "imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 10123, timeout: null };
 			let rightPanel = { id: "imgRight", path: "/right/", files: [], index: 0, interval: 32345, timeout: null };
 			let panels = [upperLeft, lowerLeft, rightPanel];
@@ -54,15 +54,13 @@
 			(() => {
 				panels.map(panel => {
 					let $img = document.getElementById(panel.id);
-					$img.addEventListener("transitionend", () => {
-						if ($img.classList.contains("fadeOut")) {
-							if (panel.index >= panel.files.length) panel.index = 0;
-							$img.src = myUrl + panel.path + panel.files[panel.index++];
-						}
-					});
-					$img.addEventListener("load", () => {
-						$img.classList.remove("fadeOut");
-					});
+					const loadNextImage = () => {
+						if (panel.index >= panel.files.length) panel.index = 0;
+						$img.src = myUrl + panel.path + panel.files[panel.index++];
+					};
+					$img.addEventListener("transitionend", () => $img.classList.contains("fadeOut") && loadNextImage());
+					$img.addEventListener("load", () => $img.classList.remove("fadeOut"));
+					$img.addEventListener("error", () => setTimeout(loadNextImage, 3000));
 				});
 
 				const refreshImage = (panel, defaultIndex = -1) => {

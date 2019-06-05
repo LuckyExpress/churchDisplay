@@ -34,44 +34,61 @@
 	<body>
 		<div class="leftContainer">
 			<div class="left">
-				<img id="imgUpperLeft" class="ul leftImg" />
+				<div id="upperLeft">
+					<img class="ul leftImg" />
+					<img class="ul leftImg fadeOut" />
+				</div>
 				<div class="divider1st"></div>
-				<img id="imgLowerLeft" class="ul leftImg" />
+				<div id="lowerLeft">
+					<img class="ul leftImg" />
+					<img class="ul leftImg fadeOut" />
+				</div>
 				<div class="divider2nd"></div>
 			</div>
 		</div>
-		<div class="rightContainer">
-			<img id="imgRight" class="ul rightImg" />
+		<div id="rightPanel" class="rightContainer">
+			<img class="ul rightImg" />
+			<img class="ul rightImg fadeOut" />
 		</div>
 
 		<script type="text/javascript">
 			// division (interval:19876/10123/32345) (190522)
-			let upperLeft = { id: "imgUpperLeft", path: "/upperLeft/", files: [], index: 0, interval: 19876, timeout: null };
-			let lowerLeft = { id: "imgLowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 10123, timeout: null };
-			let rightPanel = { id: "imgRight", path: "/right/", files: [], index: 0, interval: 32345, timeout: null };
+			let upperLeft = { id: "upperLeft", path: "/upperLeft/", files: [], index: 0, interval: 5678, timeout: null };
+			let lowerLeft = { id: "lowerLeft", path: "/lowerLeft/", files: [], index: 0, interval: 7890, timeout: null };
+			let rightPanel = { id: "rightPanel", path: "/right/", files: [], index: 0, interval: 8901, timeout: null };
 			let panels = [upperLeft, lowerLeft, rightPanel];
 
 			(() => {
 				panels.map(panel => {
-					let $img = document.getElementById(panel.id);
+					let $images = document.getElementById(panel.id).getElementsByTagName("img");
+					let $imgs = Array.prototype.slice.call($images);
 					const loadNextImage = () => {
 						if (panel.index >= panel.files.length) panel.index = 0;
-						$img.src = myUrl + panel.path + panel.files[panel.index++];
+						$imgFadedOut.src = myUrl + panel.path + panel.files[panel.index++];
 					};
-					$img.addEventListener("transitionend", () => $img.classList.contains("fadeOut") && loadNextImage());
-					$img.addEventListener("load", () => $img.classList.remove("fadeOut"));
-					$img.addEventListener("error", () => setTimeout(loadNextImage, 3000));
+					$imgs.map($img => {
+						$img.addEventListener("transitionend", () => $img.classList.contains("fadeOut") && loadNextImage());
+						// $img.addEventListener("load", () => $img.classList.remove("fadeOut"));
+						$img.addEventListener("error", () => setTimeout(loadNextImage, 3000));
+					});
 				});
 
 				const refreshImage = (panel, defaultIndex = -1) => {
 					clearTimeout(panel.timeout);
 					if (panel.files && panel.files.length > 0) {
-						let $img = document.getElementById(panel.id);
+						let $imgs = document.getElementById(panel.id).getElementsByTagName("img");
 						if (defaultIndex !== -1) panel.index = defaultIndex;
-						if (!$img.src) {
-							$img.src = myUrl + panel.path + panel.files[panel.index++];
+						if (!$imgs[0].src) {
+							$imgs[0].src = myUrl + panel.path + panel.files[panel.index++];
+							if (panel.files.length !== 1) $imgs[1].src = myUrl + panel.path + panel.files[panel.index++];
 						} else {
-							$img.classList.add("fadeOut");
+							if ($imgs[0].classList.contains("fadeOut")) {
+								$imgs[0].classList.remove("fadeOut");
+								$imgs[1].classList.add("fadeOut");
+							} else {
+								$imgs[1].classList.remove("fadeOut");
+								$imgs[0].classList.add("fadeOut");
+							}
 						}
 						if (panel.files.length !== 1) {
 							panel.timeout = setTimeout(() => refreshImage(panel), panel.interval);

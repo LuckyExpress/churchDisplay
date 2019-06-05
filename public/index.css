@@ -22,7 +22,17 @@ img.fadeOut {
 		float: right;
 		height: 1080px;
 	}
+	#upperLeft {
+		position: relative;
+		height: 535px;
+	}
+	#lowerLeft {
+		position: relative;
+	}
 	.leftImg {
+		position: absolute;
+		top: 0;
+		right: 0;
 		width: 830px;
 		height: 535px;
 	}

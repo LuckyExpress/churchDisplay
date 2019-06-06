@@ -62,11 +62,15 @@
 				panels.map(panel => {
 					let $images = document.getElementById(panel.id).getElementsByTagName("img");
 					let $imgs = Array.prototype.slice.call($images);
-					const loadNextImage = () => {
-						if (panel.index >= panel.files.length) panel.index = 0;
-						$imgFadedOut.src = myUrl + panel.path + panel.files[panel.index++];
-					};
 					$imgs.map($img => {
+						const loadNextImage = () => {
+							if (panel.files.length > 0) {
+								if (panel.index >= panel.files.length) panel.index = 0;
+								console.log("panel.index:" + panel.index);
+								console.log("panel.files.length:" + panel.files.length);
+								$img.src = myUrl + panel.path + panel.files[panel.index++];
+							}
+						};
 						$img.addEventListener("transitionend", () => $img.classList.contains("fadeOut") && loadNextImage());
 						// $img.addEventListener("load", () => $img.classList.remove("fadeOut"));
 						$img.addEventListener("error", () => setTimeout(loadNextImage, 3000));
@@ -80,7 +84,7 @@
 						if (defaultIndex !== -1) panel.index = defaultIndex;
 						if (!$imgs[0].src) {
 							$imgs[0].src = myUrl + panel.path + panel.files[panel.index++];
-							if (panel.files.length !== 1) $imgs[1].src = myUrl + panel.path + panel.files[panel.index++];
+							$imgs[1].src = $imgs[0].src;
 						} else {
 							if ($imgs[0].classList.contains("fadeOut")) {
 								$imgs[0].classList.remove("fadeOut");
@@ -132,7 +136,9 @@
 
 				const initDiv = (div, files) => {
 					if (files) {
-						div.files = shuffle(files);
+						// debug
+						// div.files = shuffle(files);
+						div.files = files.slice();
 						refreshImage(div, 0);
 					}
 				};
@@ -141,13 +147,13 @@
 					.then(resp => resp.json())
 					.then(data => initDiv(upperLeft, data));
 
-				fetch(myUrl + "/dir2")
-					.then(resp => resp.json())
-					.then(data => initDiv(lowerLeft, data));
+				// fetch(myUrl + "/dir2")
+				// 	.then(resp => resp.json())
+				// 	.then(data => initDiv(lowerLeft, data));
 
-				fetch(myUrl + "/dir3")
-					.then(resp => resp.json())
-					.then(data => initDiv(rightPanel, data));
+				// fetch(myUrl + "/dir3")
+				// 	.then(resp => resp.json())
+				// 	.then(data => initDiv(rightPanel, data));
 
 				// reload page at 4:30 everyday (180125)
 				((hours, minutes, seconds) => {
